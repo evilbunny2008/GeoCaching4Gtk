@@ -1,6 +1,6 @@
 Package: geocachingapp
 Version: 0.0.1
-Section: gnome
+Section: games
 Priority: optional
 Architecture: all
 Essential: no

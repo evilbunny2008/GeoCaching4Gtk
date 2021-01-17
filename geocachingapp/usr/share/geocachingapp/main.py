@@ -34,14 +34,16 @@ ICON_FILE = "/usr/share/pixmaps/geocachingapp.png"
 
 class cacheScreen(Gtk.ApplicationWindow):
     def __init__(self, app):
-        Gtk.ApplicationWindow.__init__(self, title="GeoCaching Details", application=app)
+        Gtk.ApplicationWindow.__init__(self, application=app)
 
         self.set_title('GeoCaching Details')
         self.set_default_size(400, 650)
 
         self.set_icon_from_file(ICON_FILE)
 
-        header = Gtk.HeaderBar(title="GeoCaching Details")
+        mycache = json.loads(util.get_json_row(app.gcid))
+
+        header = Gtk.HeaderBar(title=mycache['cachename'])
         header.set_show_close_button(False)
 
         self.set_titlebar(header)
@@ -50,185 +52,169 @@ class cacheScreen(Gtk.ApplicationWindow):
         button.connect("clicked", self.on_button_clicked) 
         header.pack_start(button)
 
-        mycache = json.loads(util.get_json_row(app.gcid))
         grid1 = Gtk.Grid()
-        grid1.set_hexpand(True)
         row = 0
 
         label1a = Gtk.Label()
+        label1a.set_halign(Gtk.Align.START)
         label1a.set_markup("Cache Name:")
 
-        label1b = Gtk.Label()
-        label1b.set_text(" ")
-
         label1c = Gtk.Label()
+        label1c.set_halign(Gtk.Align.START)
         label1c.set_markup("<big><b>" + mycache['cachename'] + "</b></big>")
 
         grid1.attach(label1a, 0, row, 1, 1)
-        grid1.attach(label1b, 1, row, 1, 1)
-        grid1.attach(label1c, 2, row, 1, 1)
+        grid1.attach(label1c, 1, row, 1, 1)
         row += 1
 
         label1a = Gtk.Label()
+        label1a.set_halign(Gtk.Align.START)
         label1a.set_markup("Cache Type:")
 
-        label1b = Gtk.Label()
-        label1b.set_text(" ")
-
         label1c = Gtk.Label()
+        label1c.set_halign(Gtk.Align.START)
         label1c.set_markup("<big>" + mycache['cachetype'] + "</big>")
 
         grid1.attach(label1a, 0, row, 1, 1)
-        grid1.attach(label1b, 1, row, 1, 1)
-        grid1.attach(label1c, 2, row, 1, 1)
+        grid1.attach(label1c, 1, row, 1, 1)
         row += 1
 
         label1a = Gtk.Label()
+        label1a.set_halign(Gtk.Align.START)
         label1a.set_markup("Cache Size:")
 
-        label1b = Gtk.Label()
-        label1b.set_text(" ")
-
         label1c = Gtk.Label()
+        label1c.set_halign(Gtk.Align.START)
         label1c.set_markup("<big>" + mycache['cachesize'] + "</big>")
 
         grid1.attach(label1a, 0, row, 1, 1)
-        grid1.attach(label1b, 1, row, 1, 1)
-        grid1.attach(label1c, 2, row, 1, 1)
+        grid1.attach(label1c, 1, row, 1, 1)
         row += 1
 
         label1a = Gtk.Label()
+        label1a.set_halign(Gtk.Align.START)
         label1a.set_markup("Cache ID:")
 
-        label1b = Gtk.Label()
-        label1b.set_text(" ")
-
         label1c = Gtk.Label()
+        label1c.set_halign(Gtk.Align.START)
         label1c.set_markup("<big>" + mycache['cacheid'] + "</big>")
 
         grid1.attach(label1a, 0, row, 1, 1)
-        grid1.attach(label1b, 1, row, 1, 1)
-        grid1.attach(label1c, 2, row, 1, 1)
+        grid1.attach(label1c, 1, row, 1, 1)
         row += 1
 
         label1a = Gtk.Label()
+        label1a.set_halign(Gtk.Align.START)
         label1a.set_markup("Distance:")
 
-        label1b = Gtk.Label()
-        label1b.set_text(" ")
-
         label1c = Gtk.Label()
+        label1c.set_halign(Gtk.Align.START)
         fwd_az = util.get_azimuth(app.lat, app.lon, mycache['lat'], mycache['lon'])
         dist = util.distance_on_unit_sphere(app.lat, app.lon, mycache['lat'], mycache['lon'])
         label1c.set_markup("<big>" + str(int(round(dist * 1000, 0))) + "m @ " + \
                             str(int(round(fwd_az, 0))) + "&#176;</big>")
 
         grid1.attach(label1a, 0, row, 1, 1)
-        grid1.attach(label1b, 1, row, 1, 1)
-        grid1.attach(label1c, 2, row, 1, 1)
+        grid1.attach(label1c, 1, row, 1, 1)
         row += 1
 
         label1a = Gtk.Label()
+        label1a.set_halign(Gtk.Align.START)
         label1a.set_markup("Difficulty:")
 
-        label1b = Gtk.Label()
-        label1b.set_text(" ")
-
         label1c = Gtk.Label()
+        label1c.set_halign(Gtk.Align.START)
         label1c.set_markup("<big>" + str(float(mycache['diff'])) + "/5.0</big>")
 
         grid1.attach(label1a, 0, row, 1, 1)
-        grid1.attach(label1b, 1, row, 1, 1)
-        grid1.attach(label1c, 2, row, 1, 1)
+        grid1.attach(label1c, 1, row, 1, 1)
         row += 1
 
         label1a = Gtk.Label()
+        label1a.set_halign(Gtk.Align.START)
         label1a.set_markup("Terrain:")
 
-        label1b = Gtk.Label()
-        label1b.set_text(" ")
-
         label1c = Gtk.Label()
+        label1c.set_halign(Gtk.Align.START)
         label1c.set_markup("<big>" + str(float(mycache['terr'])) + "/5.0</big>")
 
         grid1.attach(label1a, 0, row, 1, 1)
-        grid1.attach(label1b, 1, row, 1, 1)
-        grid1.attach(label1c, 2, row, 1, 1)
+        grid1.attach(label1c, 1, row, 1, 1)
         row += 1
 
         label1a = Gtk.Label()
+        label1a.set_halign(Gtk.Align.START)
         label1a.set_markup("Owner:")
 
-        label1b = Gtk.Label()
-        label1b.set_text(" ")
-
         label1c = Gtk.Label()
+        label1c.set_halign(Gtk.Align.START)
         label1c.set_markup("<big>" + mycache['cacheowner'] + "</big>")
 
         grid1.attach(label1a, 0, row, 1, 1)
-        grid1.attach(label1b, 1, row, 1, 1)
-        grid1.attach(label1c, 2, row, 1, 1)
+        grid1.attach(label1c, 1, row, 1, 1)
         row += 1
 
         label1a = Gtk.Label()
+        label1a.set_halign(Gtk.Align.START)
         label1a.set_markup("Hidden:")
 
-        label1b = Gtk.Label()
-        label1b.set_text(" ")
-
         label1c = Gtk.Label()
+        label1c.set_halign(Gtk.Align.START)
         date = time.strftime('%d %b %Y', time.localtime(mycache['hidden']))
         label1c.set_markup("<big>" + date + "</big>")
 
         grid1.attach(label1a, 0, row, 1, 1)
-        grid1.attach(label1b, 1, row, 1, 1)
-        grid1.attach(label1c, 2, row, 1, 1)
+        grid1.attach(label1c, 1, row, 1, 1)
         row += 1
 
         label1a = Gtk.Label()
+        label1a.set_halign(Gtk.Align.START)
         label1a.set_markup("Last Found:")
 
-        label1b = Gtk.Label()
-        label1b.set_text(" ")
-
         label1c = Gtk.Label()
+        label1c.set_halign(Gtk.Align.START)
         date = time.strftime('%d %b %Y', time.localtime(mycache['lastfound']))
         label1c.set_markup("<big>" + date + "</big>")
 
         grid1.attach(label1a, 0, row, 1, 1)
-        grid1.attach(label1b, 1, row, 1, 1)
-        grid1.attach(label1c, 2, row, 1, 1)
+        grid1.attach(label1c, 1, row, 1, 1)
         row += 1
 
         label1a = Gtk.Label()
+        label1a.set_halign(Gtk.Align.START)
         label1a.set_markup("Cache Location:")
 
-        label1b = Gtk.Label()
-        label1b.set_text(" ")
-
         label1c = Gtk.Label()
+        label1c.set_halign(Gtk.Align.START)
         latlon = util.from_decimal(mycache['lat'], 'lat') + " - " + \
                     util.from_decimal(mycache['lon'], 'lon')
         label1c.set_markup(latlon)
 
         grid1.attach(label1a, 0, row, 1, 1)
-        grid1.attach(label1b, 1, row, 1, 1)
-        grid1.attach(label1c, 2, row, 1, 1)
+        grid1.attach(label1c, 1, row, 1, 1)
         row += 1
 
+        icons = json.loads(util.get_json_attributes(app.gcid))
+        counter = 0
+        for icon in icons:
+            if counter % 7 == 0:
+                hbox1 = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
+                grid1.attach(hbox1, 0, row, 2, 1)
+                row += 1
+
+            image = Gtk.Image()
+            picfile = "/usr/share/geocachingapp/assets/attribute_" + icon + ".png"
+            image.set_from_file(picfile)
+            hbox1.pack_start(image, False, False, 1)
+            counter += 1
+
         label1a = Gtk.Label()
+        label1a.set_halign(Gtk.Align.START)
         label1a.set_hexpand(True)
         agetext = util.stored_age(mycache['dltime'])
         label1a.set_markup("Stored in Device: " + agetext)
-        grid1.attach(label1a, 0, row, 3, 1)
+        grid1.attach(label1a, 0, row, 2, 1)
         row += 1
-
-        # {"cacheid": "GC44PJ1", "dltime": 781363, "cachename": "Littles Rest", "cacheowner": "by Littlerober53",
-        # "cacheurl": "https://www.geocaching.com/geocache/GC44PJ1", "cachesize": "Small", "cachetype": "Traditional",
-        # "lat": -29.959833, "lon": 151.227867, "diff": 2.5, "terr": 2.5, "hidden": 1358686800, "lastfound": 1573909200,
-        # "short": "This cache is on the outer of Tingha.<br>\r\nThis is not a hard area to reach.<br>\r\nThe difficulty is easy.<br>\r\nDon't stub the toe and watch the Blackberry's.<br>",
-        # "body": "This cache has now become a monument to the People of Tingha who lost personal possessions and livelihood due to The TINGHA PLATEAU FIRE IN 2019, THE FIRE BURNED THROUGH MORE THAN 17,100 HECTARES AND TO THE MANY VOLUNTEERS THAT HELPED WE SAY THANK YOU This cache was destroyed to. A nice stroll on the common in area of bush on outer Tingha.<br/>\r\nTin was discovered in the area in the 1870's and this led to a rapid growth in its population as thousands flocked to the area. At the height of the tin mining era, the township had a population of between 7000 and 8000 people. More than 25% of these people were Chinese.<br/>\r\nNow the population has decreased to a village as there is no more mining going on.<br/>\r\nCache contents consist of trade able items.<br/>\r\nThis cache was placed here in memory of family Little and Tingha Plateau Fire.<br/>\n<br/>\n",
-        # "hint": "Gb evtug bs ebnq hc va ebpxf", "found": 0}
 
         content = "<span size='x-large'>Please wait, loading " + app.gcid + "</span>"
 
@@ -400,6 +386,9 @@ class mainScreen(Gtk.ApplicationWindow):
         marker.connect("touch-event", self.marker_touch_release_cb, gcid)
 
     def marker_button_release_cb(self, actor, event, gcid):
+        if app.cache is not None:
+            return False
+
         print("ID '" + gcid + "' was clicked")
 
         app.gcid = gcid
