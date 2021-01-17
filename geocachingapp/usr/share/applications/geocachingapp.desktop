@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=GeoCaching App
+Comment=GeoCaching App 4 Gtk
+Exec=/usr/bin/python3 /usr/share/geocachingapp/main.py %U
+Icon=/usr/share/pixmaps/geocachingapp.png
+Terminal=false
+Type=Application
+Encoding=UTF-8
+Categories=Network;Application;
