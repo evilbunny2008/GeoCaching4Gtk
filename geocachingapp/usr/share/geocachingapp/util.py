@@ -950,9 +950,23 @@ def stored_age(dlage):
         age = age + " minutes ago"
     elif dlage < 86400:
         age = str(int(round(dlage / 3600)))
-        age = age + "%1 hours ago"
+        age = age + " hours ago"
     else:
         age = str(int(round(dlage / 86400)))
         age = age + " days ago"
 
     return age
+
+def html_filter(mystr):
+    mystr = mystr.replace("\n", "")
+    mystr = mystr.replace("\r", "")
+    mystr = mystr.replace("<br>", "\n")
+    mystr = mystr.replace("<br />", "\n")
+    mystr = mystr.replace("</br>", "")
+    mystr = mystr.replace("<br/>", "\n")
+    mystr = mystr.replace('rel="nofollow"', "")
+    mystr = mystr.replace('target="_blank"', "")
+    mystr = mystr.replace("<p>", "")
+    mystr = mystr.replace("</p>", "\n\n")
+
+    return mystr

@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+import codecs
 import files
 import json
 import os
@@ -93,27 +94,58 @@ class cacheScreen(Gtk.ApplicationWindow):
                     util.from_decimal(mycache['lon'], 'lon')
         row = self.add_grid_row("Cache Location:", mystr, grid1, row)
 
-        label1a = Gtk.Label()
-        label1a.set_halign(Gtk.Align.START)
-        label1a.set_hexpand(True)
+        row = self.show_icons(grid1, row)
+
+        label = Gtk.Label()
+        label.set_halign(Gtk.Align.START)
+        label.set_hexpand(True)
         agetext = util.stored_age(mycache['dltime'])
-        label1a.set_markup("Stored in Device: " + agetext)
-        grid1.attach(label1a, 0, row, 2, 1)
+        label.set_markup("Stored in Device: " + agetext)
+        grid1.attach(label, 0, row, 2, 1)
         row += 1
+
+        sc = Gtk.ScrolledWindow()
+        vbox = Gtk.VBox()
+        label1 = Gtk.Label()
+        label1.set_hexpand(True)
+        label1.set_halign(Gtk.Align.START)
+        label1.set_line_wrap(True)
+        label1.set_markup(util.html_filter(mycache['short']))
+        vbox.pack_start(label1, False, True, 0)
+
+        label2 = Gtk.Label()
+        label2.set_hexpand(True)
+        label2.set_halign(Gtk.Align.START)
+        label2.set_line_wrap(True)
+        label2.set_markup(util.html_filter(mycache['body']))
+        vbox.pack_start(label2, False, True, 0)
+
+        if mycache['hint'] != "":
+            label3 = Gtk.Label()
+            label3.set_halign(Gtk.Align.START)
+            label3.set_line_wrap(True)
+            label3.set_markup("<b><big>Hint:</big></b>")
+
+            vbox.pack_start(label3, False, True, 0)
+
+            self.hint = Gtk.Button(label=mycache['hint'])
+            self.hint.set_halign(Gtk.Align.START)
+            self.hint.connect("clicked", self.encode_decode)
+            vbox.pack_start(self.hint, False, True, 0)
+
+            label4 = Gtk.Label()
+            label4.set_markup("\n\n")
+            vbox.pack_start(label4, False, True, 0)
+
+        sc.add_with_viewport(vbox)
+
+        logs = json.loads(util.get_json_logs(app.gcid))
+        print(logs)
 
         content = "<span size='x-large'>Please wait, loading " + app.gcid + "</span>"
 
-        label2 = Gtk.Label()
-        label2.set_markup(content)
-
-        label3 = Gtk.Label()
-        label3.set_markup(content)
-
-        hbox2 = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
-        hbox2.pack_start(label2, True, True, 0)
-
-        hbox3 = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
-        hbox3.pack_start(label3, True, True, 0)
+        label = Gtk.Label()
+        label.set_markup(content)
 
         self.notebook = Gtk.Notebook()
         self.notebook.set_scrollable(True)
@@ -122,17 +154,25 @@ class cacheScreen(Gtk.ApplicationWindow):
         self.lblabel = Gtk.Label(label="Logbook")
 
         self.notebook.append_page(grid1, self.dlabel)
-        self.notebook.append_page(hbox2, self.desclabel)
-        self.notebook.append_page(hbox3, self.lblabel)
+        self.notebook.append_page(sc, self.desclabel)
+        self.notebook.append_page(label, self.lblabel)
         self.add(self.notebook)
+
+    def encode_decode(self, event):
+        mystr = self.hint.get_label()
+        secret = codecs.encode(mystr, 'rot_13')
+        self.hint.set_label(secret)
 
     def add_grid_row(self, label1str, label2str, grid1, row):
         label1 = Gtk.Label()
-        label1.set_markup(label1str)
         label2 = Gtk.Label()
+
+        label1.set_markup(label1str)
         label2.set_markup(label2str)
+
         label1.set_halign(Gtk.Align.START)
         label2.set_halign(Gtk.Align.START)
+
         grid1.attach(label1, 0, row, 1, 1)
         grid1.attach(label2, 1, row, 1, 1)
         row += 1
@@ -149,7 +189,7 @@ class cacheScreen(Gtk.ApplicationWindow):
                 row += 1
 
             image = Gtk.Image()
-            picfile = files.APPBASE + "/assets/attribute_" + icon + ".png"
+            picfile = files.APPBASE + "/assets/attribute_" + icon.lower() + ".png"
             image.set_from_file(picfile)
             hbox1.pack_start(image, False, False, 1)
             counter += 1
