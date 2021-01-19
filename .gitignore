@@ -4,6 +4,8 @@ build-dir/
 .flatpak-builder/
 *.py[cod]
 *$py.class
+geocachingapp.deb
+.vscode/
 
 # C extensions
 *.so

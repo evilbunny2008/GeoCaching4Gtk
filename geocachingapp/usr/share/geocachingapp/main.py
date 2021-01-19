@@ -15,6 +15,7 @@ gi.require_version('Gtk', "3.0")
 gi.require_version('GtkChamplain', '0.12')
 gi.require_version('GtkClutter', '1.0')
 gi.require_version('Notify', '0.7')
+gi.require_version('WebKit2', '4.0')
 
 from gi.repository import Gdk
 from gi.repository import GdkPixbuf
@@ -24,6 +25,7 @@ from gi.repository import Gio
 from gi.repository import Notify
 from gi.repository import GtkClutter, Clutter
 from gi.repository import Champlain, GtkChamplain
+from gi.repository import WebKit2
 
 GtkClutter.init([])
 Notify.init("Geocaching App")
@@ -140,12 +142,11 @@ class cacheScreen(Gtk.ApplicationWindow):
         sc.add_with_viewport(vbox)
 
         logs = json.loads(util.get_json_logs(app.gcid))
-        print(logs)
-
+        # print(logs)
         content = "<span size='x-large'>Please wait, loading " + app.gcid + "</span>"
-
-        label = Gtk.Label()
-        label.set_markup(content)
+        base_uri = "file:///"
+        webkit = WebKit2.WebView()
+        webkit.load_html(content, base_uri)
 
         self.notebook = Gtk.Notebook()
         self.notebook.set_scrollable(True)
@@ -155,7 +156,7 @@ class cacheScreen(Gtk.ApplicationWindow):
 
         self.notebook.append_page(grid1, self.dlabel)
         self.notebook.append_page(sc, self.desclabel)
-        self.notebook.append_page(label, self.lblabel)
+        self.notebook.append_page(webkit, self.lblabel)
         self.add(self.notebook)
 
     def encode_decode(self, event):
