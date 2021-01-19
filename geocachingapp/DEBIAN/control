@@ -16,4 +16,5 @@ Depends: python3,
          libchamplain-gtk-0.12-0,
          gir1.2-notify-0.7,
          python3-geographiclib
+         gir1.2-gtkclutter-1.0 
 Description: Geocaching App 4 Gtk
