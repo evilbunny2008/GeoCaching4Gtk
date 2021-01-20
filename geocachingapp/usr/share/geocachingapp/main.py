@@ -141,12 +141,12 @@ class cacheScreen(Gtk.ApplicationWindow):
 
         sc.add_with_viewport(vbox)
 
-        logs = json.loads(util.get_json_logs(app.gcid))
+        logs = util.get_html_logs(app.gcid)
         # print(logs)
-        content = "<span size='x-large'>Please wait, loading " + app.gcid + "</span>"
+
         base_uri = "file:///"
         webkit = WebKit2.WebView()
-        webkit.load_html(content, base_uri)
+        webkit.load_html(logs, base_uri)
 
         self.notebook = Gtk.Notebook()
         self.notebook.set_scrollable(True)

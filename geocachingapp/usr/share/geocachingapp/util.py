@@ -970,3 +970,23 @@ def html_filter(mystr):
     mystr = mystr.replace("</p>", "\n\n")
 
     return mystr
+
+def html_log(log):
+    html = "<tr>"
+    html += "<td colspan='3'><b>" + log['username'] + "</b></td>"
+    html += "<td>" + log['visited'] + "<br>"
+    html += log['logtype'] + "<br>"
+    html += str(log['findcount']) + " caches</td>"
+    html += "<td rowspan='3' style='background-color:green'>&nbsp;</td>"
+    html += "<td rowspan='4'>" + log['logtext'] + "</td>"
+    html += "</tr>"
+    return html
+
+def get_html_logs(cacheid):
+    html = "<table>"
+    logs = json.loads(get_json_logs(cacheid))
+    for log in logs:
+        html += html_log(log)
+
+    html += "</table>"
+    return html
