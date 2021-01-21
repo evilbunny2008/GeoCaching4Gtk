@@ -31,7 +31,7 @@ GtkClutter.init([])
 Notify.init("Geocaching App")
 
 CACHE_SIZE = 100000000
-MEMORY_CACHE_SIZE = 100
+MEMORY_CACHE_SIZE = 20
 
 ICON_FILE = "/usr/share/pixmaps/geocachingapp.png"
 
@@ -145,8 +145,8 @@ class cacheScreen(Gtk.ApplicationWindow):
         # print(logs)
 
         base_uri = "file:///"
-        webkit = WebKit2.WebView()
-        webkit.load_html(logs, base_uri)
+        self.webkit = WebKit2.WebView()
+        self.webkit.load_html(logs, base_uri)
 
         self.notebook = Gtk.Notebook()
         self.notebook.set_scrollable(True)
@@ -156,7 +156,7 @@ class cacheScreen(Gtk.ApplicationWindow):
 
         self.notebook.append_page(grid1, self.dlabel)
         self.notebook.append_page(sc, self.desclabel)
-        self.notebook.append_page(webkit, self.lblabel)
+        self.notebook.append_page(self.webkit, self.lblabel)
         self.add(self.notebook)
 
     def encode_decode(self, event):
@@ -201,6 +201,7 @@ class cacheScreen(Gtk.ApplicationWindow):
 
     def on_button_clicked(self, widget):
         app.cache = None
+        self.webkit.destroy()
         self.destroy()
 
 class LoginScreen(Gtk.ApplicationWindow):

@@ -972,14 +972,28 @@ def html_filter(mystr):
     return mystr
 
 def html_log(log):
-    html = "<tr>"
-    html += "<td colspan='3'><b>" + log['username'] + "</b></td>"
-    html += "<td>" + log['visited'] + "<br>"
-    html += log['logtype'] + "<br>"
-    html += str(log['findcount']) + " caches</td>"
-    html += "<td rowspan='3' style='background-color:green'>&nbsp;</td>"
-    html += "<td rowspan='4'>" + log['logtext'] + "</td>"
-    html += "</tr>"
+    fnfcolor = "#f0e442"
+
+    if log['logtype'] == "Found it":
+        fnfcolor = "#3eb34f"
+    elif log['logtype'] == "Didn't find it":
+        fnfcolor = "#ed3146"
+    elif log['logtype'] == "Temporarily Disable Listing":
+        log['logtype'] = "Disabled"
+    elif log['logtype'] == "Owner Maintenance":
+        log['logtype'] = "Maintainance"
+    elif log['logtype'] == "Enable Listing":
+        log['logtype'] = "Enabled"
+    elif log['logtype'] == "Publish Listing":
+        log['logtype'] = "Published"
+
+    html = "<tr><td colspan='3'><b>" + log['username'] + "</b></td></tr>\n"
+    html += "<tr><td style='white-space:nowrap'>" + log['visited'] + "</td>\n"
+    html += "<td rowspan='3' style='width:10px;background-color:" + fnfcolor + "'>&nbsp;</td>\n"
+    html += "<td rowspan='4'>" + log['logtext'] + "</td></tr>\n"
+    html += "<tr><td style='white-space:nowrap'>" + log['logtype'] + "</td></tr>\n"
+    html += "<tr><td style='white-space:nowrap'>" + str(log['findcount']) + " caches</td>"
+    html += "<tr><td>&nbsp;</td><td>&nbsp;</td></tr>\n"
     return html
 
 def get_html_logs(cacheid):
