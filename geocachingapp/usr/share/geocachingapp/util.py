@@ -997,10 +997,10 @@ def html_log(log):
     return html
 
 def get_html_logs(cacheid):
-    html = "<table>"
+    html = "<html><body><table>"
     logs = json.loads(get_json_logs(cacheid))
     for log in logs:
         html += html_log(log)
 
-    html += "</table>"
+    html += "</table></body></html>"
     return html

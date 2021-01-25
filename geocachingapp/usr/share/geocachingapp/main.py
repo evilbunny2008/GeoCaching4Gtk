@@ -30,8 +30,10 @@ from gi.repository import WebKit2
 GtkClutter.init([])
 Notify.init("Geocaching App")
 
-CACHE_SIZE = 100000000
-MEMORY_CACHE_SIZE = 20
+# Cache 1000000 tiles in ~/.cache
+CACHE_SIZE = 1000000
+# Cache 200 tiles in memory
+MEMORY_CACHE_SIZE = 200
 
 ICON_FILE = "/usr/share/pixmaps/geocachingapp.png"
 
@@ -201,7 +203,6 @@ class cacheScreen(Gtk.ApplicationWindow):
 
     def on_button_clicked(self, widget):
         app.cache = None
-        self.webkit.destroy()
         self.destroy()
 
 class LoginScreen(Gtk.ApplicationWindow):
@@ -313,6 +314,7 @@ class mainScreen(Gtk.ApplicationWindow):
         bbox.add(button)
 
         self.osmmap = GtkChamplain.Embed()
+        self.osmmap.set_size_request(200, 200)
         self.view = self.osmmap.get_view()
         self.view.set_map_source(self.create_cached_source())
 
@@ -348,8 +350,9 @@ class mainScreen(Gtk.ApplicationWindow):
         print("ID '" + gcid + "' was clicked")
 
         app.gcid = gcid
-        app.cache = cacheScreen(app)
-        app.cache.show_all()
+        app.cache = True
+        self.cache = cacheScreen(app)
+        self.cache.show_all()
 
     def marker_touch_release_cb(self, actor, event, gcid):
         if app.cache is not None:
@@ -358,8 +361,9 @@ class mainScreen(Gtk.ApplicationWindow):
         print("ID '" + gcid + "' was touched")
 
         app.gcid = gcid
-        app.cache = cacheScreen(app)
-        app.cache.show_all()
+        app.cache = True
+        self.cache = cacheScreen(app)
+        self.cache.show_all()
 
     def create_marker_layer(self, view):
         layer = Champlain.MarkerLayer()
