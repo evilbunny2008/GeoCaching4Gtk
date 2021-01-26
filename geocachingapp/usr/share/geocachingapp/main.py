@@ -38,7 +38,7 @@ MEMORY_CACHE_SIZE = 200
 ICON_FILE = "/usr/share/pixmaps/geocachingapp.png"
 
 class downloadProgress(Gtk.ApplicationWindow):
-    def __init__(self, app):
+    def __init__(self):
         Gtk.Window.__init__(self, title="Downloading caches...")
         self.set_border_width(10)
         self.vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
@@ -241,12 +241,15 @@ class mainScreen(Gtk.ApplicationWindow):
     def download_callback(self, action, parameter):
         thread = threading.Thread(target=self.thread_function)
         thread.start()
-        self.dl = downloadProgress(self)
-        self.dl.show_all()
+        app.dl = downloadProgress()
+        app.dl.show_all()
 
     def display_markers(self):
         ret = util.get_markers()
         ret = json.loads(ret)
+
+        if self.layer is not None:
+            self.layer.remove_all()
 
         for row in ret:
             cachetype = row['cachetype']
