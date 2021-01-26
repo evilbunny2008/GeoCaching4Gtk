@@ -37,17 +37,17 @@ MEMORY_CACHE_SIZE = 200
 
 ICON_FILE = "/usr/share/pixmaps/geocachingapp.png"
 
-class downloadProgress(Gtk.ApplicationWindow):
-    def __init__(self):
-        Gtk.Window.__init__(self, title="Downloading caches...")
-        self.set_border_width(10)
-        self.vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
-        self.add(self.vbox)
-        self.progressbar = Gtk.ProgressBar()
-        self.vbox.pack_start(self.progressbar, True, True, 0)
-        print("should be showing progress bar")
-        self.progressbar.pulse()
-        self.show_all()
+# class downloadProgress(Gtk.Window):
+#     def __init__(self):
+#         Gtk.Window.__init__(self, title="Downloading caches...")
+#         self.set_border_width(10)
+#         self.vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
+#         self.add(self.vbox)
+#         self.progressbar = Gtk.ProgressBar()
+#         self.vbox.pack_start(self.progressbar, True, True, 0)
+#         print("should be showing progress bar")
+#         self.progressbar.pulse()
+#         self.show_all()
 
 class LoginScreen(Gtk.ApplicationWindow):
     def __init__(self, app):
@@ -177,8 +177,9 @@ class mainScreen(Gtk.ApplicationWindow):
         self.display_markers()
 
     def add_marker(self, lat, lon, gcid, icon):
-        marker = Champlain.Label.new_from_file(
-            "/usr/share/geocachingapp/assets/" + icon + ".png")
+        iconfile = "/usr/share/geocachingapp/assets/" + icon + ".png"
+        print(iconfile)
+        marker = Champlain.Label.new_from_file(iconfile)
         marker.set_draw_background(False)
         marker.set_location(lat, lon)
         self.layer.add_marker(marker)
@@ -193,8 +194,6 @@ class mainScreen(Gtk.ApplicationWindow):
 
     def marker_touch_release_cb(self, actor, event, gcid):
         print("ID '" + gcid + "' was touched")
-        print(event.type)
-        print()
         self.show_details(gcid)
 
     def show_details(self, cacheid):
@@ -236,20 +235,22 @@ class mainScreen(Gtk.ApplicationWindow):
 
     def thread_function(self):
         util.get_cache_list(app.lat, app.lon)
+        self.layer.remove_all()
         self.display_markers()
  
     def download_callback(self, action, parameter):
         thread = threading.Thread(target=self.thread_function)
         thread.start()
-        app.dl = downloadProgress()
-        app.dl.show_all()
+
+        progress = Notify.Notification.new("Downloading caches...",
+                                           "Downloading caches in specified area...")
+        progress.show()
+
+        # self.thread_function()
 
     def display_markers(self):
         ret = util.get_markers()
         ret = json.loads(ret)
-
-        if self.layer is not None:
-            self.layer.remove_all()
 
         for row in ret:
             cachetype = row['cachetype']
