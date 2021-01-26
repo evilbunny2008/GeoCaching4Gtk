@@ -6,6 +6,7 @@ import json
 import os
 import time
 import subprocess
+import threading
 import files
 import util
 import gi
@@ -35,6 +36,18 @@ CACHE_SIZE = 1000000
 MEMORY_CACHE_SIZE = 200
 
 ICON_FILE = "/usr/share/pixmaps/geocachingapp.png"
+
+class downloadProgress(Gtk.ApplicationWindow):
+    def __init__(self, app):
+        Gtk.Window.__init__(self, title="Downloading caches...")
+        self.set_border_width(10)
+        self.vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
+        self.add(self.vbox)
+        self.progressbar = Gtk.ProgressBar()
+        self.vbox.pack_start(self.progressbar, True, True, 0)
+        print("should be showing progress bar")
+        self.progressbar.pulse()
+        self.show_all()
 
 class LoginScreen(Gtk.ApplicationWindow):
     def __init__(self, app):
@@ -175,29 +188,17 @@ class mainScreen(Gtk.ApplicationWindow):
         marker.connect("touch-event", self.marker_touch_release_cb, gcid)
 
     def marker_button_release_cb(self, actor, event, gcid):
-        if app.cache is not None:
-            return False
-
         print("ID '" + gcid + "' was clicked")
-
-        app.gcid = gcid
-        app.cache = True
         self.show_details(gcid)
 
     def marker_touch_release_cb(self, actor, event, gcid):
-        if app.cache is not None:
-            return False
-
         print("ID '" + gcid + "' was touched")
-
-        app.gcid = gcid
-        app.cache = True
+        print(event.type)
+        print()
         self.show_details(gcid)
 
     def show_details(self, cacheid):
-        subprocess.run(["/usr/share/geocachingapp/details.py",
-                        cacheid, str(app.lat), str(app.lon)], check=True)
-        app.cache = None
+        subprocess.Popen(["/usr/share/geocachingapp/details.py", cacheid, str(app.lat), str(app.lon)])
 
     def create_marker_layer(self, view):
         layer = Champlain.MarkerLayer()
@@ -233,9 +234,15 @@ class mainScreen(Gtk.ApplicationWindow):
         app.lat2 = self.view.y_to_latitude(height)
         app.lon2 = self.view.x_to_longitude(width)
 
-    def download_callback(self, action, parameter):
+    def thread_function(self):
         util.get_cache_list(app.lat, app.lon)
         self.display_markers()
+ 
+    def download_callback(self, action, parameter):
+        thread = threading.Thread(target=self.thread_function)
+        thread.start()
+        self.dl = downloadProgress(self)
+        self.dl.show_all()
 
     def display_markers(self):
         ret = util.get_markers()

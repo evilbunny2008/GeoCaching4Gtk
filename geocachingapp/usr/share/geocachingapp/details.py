@@ -17,7 +17,7 @@ from gi.repository import Gtk
 from gi.repository import Notify
 from gi.repository import WebKit2
 
-Notify.init("Geocaching App")
+Notify.init("Geocaching Details")
 
 ICON_FILE = "/usr/share/pixmaps/geocachingapp.png"
 

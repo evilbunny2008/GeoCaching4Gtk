@@ -5,10 +5,10 @@
 import time
 import datetime
 import math
-from geographiclib.geodesic import Geodesic
-from html.parser import HTMLParser
-from html import unescape
 import json
+from html import unescape
+from html.parser import HTMLParser
+from geographiclib.geodesic import Geodesic
 import mysqlite
 import files
 import htmlcode
