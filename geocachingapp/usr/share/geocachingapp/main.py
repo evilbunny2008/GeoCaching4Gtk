@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import codecs
 import json
 import os
-import time
+import signal
 import subprocess
 import threading
 import files
@@ -18,9 +17,6 @@ gi.require_version('GtkChamplain', '0.12')
 gi.require_version('GtkClutter', '1.0')
 gi.require_version('Notify', '0.7')
 
-from gi.repository import Gdk
-from gi.repository import GdkPixbuf
-from gi.repository import GLib
 from gi.repository import Gtk
 from gi.repository import Gio
 from gi.repository import Notify
@@ -164,9 +160,14 @@ class mainScreen(Gtk.ApplicationWindow):
 
         self.display_markers()
 
+        signal.signal(signal.SIGHUP, self.alarm_handler)
+
+    def alarm_handler(self, signum, frame):
+        print("alarm_handler(" + str(signum) + ")")
+        self.display_markers()
+
     def add_marker(self, lat, lon, gcid, icon):
         iconfile = "/usr/share/geocachingapp/assets/" + icon + ".png"
-        print(iconfile)
         marker = Champlain.Label.new_from_file(iconfile)
         marker.set_draw_background(False)
         marker.set_location(lat, lon)
@@ -230,17 +231,17 @@ class mainScreen(Gtk.ApplicationWindow):
     def thread_function(self):
         util.get_cache_list(app.lat, app.lon)
         self.layer.remove_all()
-        self.display_markers()
+        os.kill(os.getpid(), signal.SIGHUP)
         # Need to communicate with parent that download is finished.
         # Can't update map icons from this thread.
- 
+
     def download_callback(self, action, parameter):
         thread = threading.Thread(target=self.thread_function)
-        thread.daemon = True
         thread.start()
 
         progress = Notify.Notification.new("Downloading caches...",
-                                           "Downloading caches in specified area this can take a while so sit back...")
+                                           "Downloading caches in specified area " + \
+                                           "this can take a while so sit back...")
         progress.show()
 
     def display_markers(self):
@@ -312,7 +313,6 @@ class Application(Gtk.Application):
         Gtk.Application.do_startup(self)
 
 if __name__ == "__main__":
-    p = None
     app = Application()
     app.cache = None
     app.lat = -33.8665593
