@@ -92,45 +92,41 @@ class cacheScreen(Gtk.Window):
         grid1.attach(label, 0, row, 2, 1)
         row += 1
 
-        sc = Gtk.ScrolledWindow()
-        vbox = Gtk.VBox()
-        label1 = Gtk.Label()
-        label1.set_hexpand(True)
-        label1.set_halign(Gtk.Align.START)
-        label1.set_line_wrap(True)
-        label1.set_markup(util.html_filter(mycache['short']))
-        vbox.pack_start(label1, False, True, 0)
-
-        label2 = Gtk.Label()
-        label2.set_hexpand(True)
-        label2.set_halign(Gtk.Align.START)
-        label2.set_line_wrap(True)
-        label2.set_markup(util.html_filter(mycache['body']))
-        vbox.pack_start(label2, False, True, 0)
+        logdesc = "<html><body>"
+        logdesc += mycache['short'] + mycache['body'] + "<br/>\n<br/>\n"
 
         if mycache['hint'] != "":
-            label3 = Gtk.Label()
-            label3.set_halign(Gtk.Align.START)
-            label3.set_line_wrap(True)
-            label3.set_markup("<b><big>Hint:</big></b>")
+            logdesc += "<b><big>Hint:</big></b><br/>\n"
+            logdesc += "<div id='enc_hint' onClick='update()'>" + mycache['hint'] + "</div>"
+            logdesc += "<div id='dec_hint' onClick='update()' style='display:none'>"
+            logdesc += codecs.encode(mycache['hint'], 'rot_13') + "</div>"
+            logdesc += "<br/><br/>"
+            logdesc += """
+<script type="text/javascript">
+function update()
+{
 
-            vbox.pack_start(label3, False, True, 0)
+    if(document.getElementById('enc_hint').style.display == '')
+    {
+        document.getElementById('enc_hint').style.display = 'none';
+        document.getElementById('dec_hint').style.display = '';
+    } else {
+        document.getElementById('enc_hint').style.display = '';
+        document.getElementById('dec_hint').style.display = 'none';
+    }
+}
+</script>
+"""
 
-            self.hint = Gtk.Button(label=mycache['hint'])
-            self.hint.set_halign(Gtk.Align.START)
-            self.hint.connect("clicked", self.encode_decode)
-            vbox.pack_start(self.hint, False, True, 0)
+        logdesc += "</body></html>"
 
-            label4 = Gtk.Label()
-            label4.set_markup("\n\n")
-            vbox.pack_start(label4, False, True, 0)
-
-        sc.add_with_viewport(vbox)
+        base_uri = "file:///"
+        webkit1 = WebKit2.WebView()
+        webkit1.load_html(logdesc, base_uri)
 
         logs = util.get_html_logs(cacheid)
         # print(logs)
 
-        base_uri = "file:///"
         self.webkit = WebKit2.WebView()
         self.webkit.load_html(logs, base_uri)
 
@@ -141,14 +137,9 @@ class cacheScreen(Gtk.Window):
         self.lblabel = Gtk.Label(label="Logbook")
 
         self.notebook.append_page(grid1, self.dlabel)
-        self.notebook.append_page(sc, self.desclabel)
+        self.notebook.append_page(webkit1, self.desclabel)
         self.notebook.append_page(self.webkit, self.lblabel)
         self.add(self.notebook)
-
-    def encode_decode(self, event):
-        mystr = self.hint.get_label()
-        secret = codecs.encode(mystr, 'rot_13')
-        self.hint.set_label(secret)
 
     def add_grid_row(self, label1str, label2str, grid1, row):
         label1 = Gtk.Label()
