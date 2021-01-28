@@ -166,6 +166,7 @@ class mainScreen(Gtk.ApplicationWindow):
         print("alarm_handler(" + str(signum) + ")")
         if signum == 1:
             self.display_markers()
+            self.progress.close()
 
     def add_marker(self, lat, lon, gcid, icon):
         iconfile = "/usr/share/geocachingapp/assets/" + icon + ".png"
@@ -232,17 +233,17 @@ class mainScreen(Gtk.ApplicationWindow):
         util.get_cache_list(app.lat, app.lon)
         self.layer.remove_all()
         os.kill(os.getpid(), signal.SIGHUP)
-        # Need to communicate with parent that download is finished.
-        # Can't update map icons from this thread.
 
     def download_callback(self, action, parameter):
         thread = threading.Thread(target=self.thread_function)
         thread.start()
 
-        progress = Notify.Notification.new("Downloading caches...",
+        self.progress = Notify.Notification.new("Downloading caches...",
                                            "Downloading caches in specified area " + \
                                            "this can take a while so sit back...")
-        progress.show()
+        self.progress.set_timeout(20000)
+        self.progress.set_urgency(2)
+        self.progress.show()
 
     def display_markers(self):
         ret = util.get_markers()
