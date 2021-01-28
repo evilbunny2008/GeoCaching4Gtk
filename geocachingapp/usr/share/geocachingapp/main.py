@@ -164,7 +164,8 @@ class mainScreen(Gtk.ApplicationWindow):
 
     def alarm_handler(self, signum, frame):
         print("alarm_handler(" + str(signum) + ")")
-        self.display_markers()
+        if signum == 1:
+            self.display_markers()
 
     def add_marker(self, lat, lon, gcid, icon):
         iconfile = "/usr/share/geocachingapp/assets/" + icon + ".png"
@@ -196,7 +197,6 @@ class mainScreen(Gtk.ApplicationWindow):
 
     def create_marker_layer(self, view):
         layer = Champlain.MarkerLayer()
-        layer.set_all_markers_draggable()
         layer.show()
 
         return layer
@@ -247,6 +247,7 @@ class mainScreen(Gtk.ApplicationWindow):
     def display_markers(self):
         ret = util.get_markers()
         ret = json.loads(ret)
+        self.layer.remove_all()
 
         for row in ret:
             cachetype = row['cachetype']

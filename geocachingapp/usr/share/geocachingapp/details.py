@@ -13,6 +13,7 @@ gi.require_version('Gtk', "3.0")
 gi.require_version('Notify', '0.7')
 gi.require_version('WebKit2', '4.0')
 
+from gi.repository import Gio
 from gi.repository import Gtk
 from gi.repository import Notify
 from gi.repository import WebKit2
@@ -21,9 +22,9 @@ Notify.init("Geocaching Details")
 
 ICON_FILE = "/usr/share/pixmaps/geocachingapp.png"
 
-class cacheScreen(Gtk.Window):
+class cacheScreen(Gtk.ApplicationWindow):
     def __init__(self):
-        Gtk.Window.__init__(self)
+        Gtk.ApplicationWindow.__init__(self)
 
         self.set_title('GeoCaching Details')
         self.set_default_size(400, 650)
@@ -36,6 +37,19 @@ class cacheScreen(Gtk.Window):
         header.set_show_close_button(False)
 
         self.set_titlebar(header)
+
+        button = Gtk.MenuButton()
+        header.pack_end(button)
+
+        menumodel = Gio.Menu()
+        menumodel.append("Log Visit", "win.log_visit")
+        # menumodel.append("About", "win.about")
+        # menumodel.append("Quit", "win.quit")
+        button.set_menu_model(menumodel)
+
+        log_visit_action = Gio.SimpleAction.new("log_visit", None)
+        log_visit_action.connect("activate", self.log_visit_callback)
+        self.add_action(log_visit_action)
 
         button = Gtk.Button(label="<")
         button.connect("clicked", self.on_button_clicked) 
@@ -141,6 +155,10 @@ function update()
         self.notebook.append_page(self.webkit, self.lblabel)
         self.add(self.notebook)
 
+    def log_visit_callback(self, action, parameter):
+        log = logScreen()
+        log.show_all()
+
     def add_grid_row(self, label1str, label2str, grid1, row):
         label1 = Gtk.Label()
         label2 = Gtk.Label()
@@ -178,7 +196,29 @@ function update()
 
     def on_button_clicked(self, widget):
         self.destroy()
-        sys.exit(0)
+
+class logScreen(Gtk.ApplicationWindow):
+    def __init__(self):
+        Gtk.ApplicationWindow.__init__(self)
+
+        self.set_title('GeoCaching Log')
+        self.set_default_size(400, 650)
+
+        self.set_icon_from_file(ICON_FILE)
+
+        mycache = json.loads(util.get_json_row(cacheid))
+
+        header = Gtk.HeaderBar(title=mycache['cachename'])
+        header.set_show_close_button(False)
+
+        self.set_titlebar(header)
+
+        button = Gtk.Button(label="<")
+        button.connect("clicked", self.on_button_clicked)
+        header.pack_start(button)
+
+    def on_button_clicked(self, widget):
+        self.destroy()
 
 if __name__ == "__main__":
     n = len(sys.argv)
