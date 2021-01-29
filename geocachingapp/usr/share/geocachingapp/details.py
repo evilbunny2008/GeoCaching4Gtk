@@ -217,6 +217,67 @@ class logScreen(Gtk.ApplicationWindow):
         button.connect("clicked", self.on_button_clicked)
         header.pack_start(button)
 
+        self.placeholderStr = "Log text goes here..."
+
+        vbox = Gtk.VBox()
+        hbox = Gtk.HBox()
+        vbox.pack_start(hbox, False, True, 0)
+        self.add(vbox)
+
+        store = Gtk.ListStore(str)
+        store.append(["Found It"])
+        store.append(["Didn't Find It"])
+        store.append(["Write Note"])
+
+        renderer_text = Gtk.CellRendererText()
+        self.combobox1 = Gtk.ComboBox.new_with_model(store)
+        self.combobox1.pack_start(renderer_text, True)
+        self.combobox1.add_attribute(renderer_text, "text", 0)
+        self.combobox1.set_active(0)
+        hbox.pack_start(self.combobox1, True, False, 6)
+
+        store = Gtk.ListStore(str)
+        store.append(["Today"])
+        store.append(["Yesterday"])
+
+        renderer_text = Gtk.CellRendererText()
+        self.combobox2 = Gtk.ComboBox.new_with_model(store)
+        self.combobox2.pack_start(renderer_text, True)
+        self.combobox2.add_attribute(renderer_text, "text", 0)
+        hbox.pack_start(self.combobox2, True, False, 6)
+        self.combobox2.set_active(0)
+
+        self.textview = Gtk.TextView()
+        self.textview.connect("focus-in-event", self.onFocusIn)
+        self.textview.connect("focus-out-event", self.onFocusOut)
+
+        self.textbuffer = self.textview.get_buffer()
+        self.textbuffer.set_text(self.placeholderStr)
+        self.textview.set_wrap_mode(Gtk.WrapMode.WORD)
+
+        vbox.pack_start(self.textview, True, True, 5)
+
+        button = Gtk.Button.new_with_label("Submit Log")
+        button.connect("clicked", self.submit_log)
+        vbox.pack_start(button, False, True, 0)
+
+        self.show_all()
+
+    def onFocusIn(self, event, something):
+        if (self.textbuffer.get_text(self.textbuffer.get_start_iter(),
+            self.textbuffer.get_end_iter(), True) == self.placeholderStr):
+            self.textbuffer.set_text("")
+        return False
+
+    def onFocusOut(self, event, something):
+        if (self.textbuffer.get_text(self.textbuffer.get_start_iter(),
+            self.textbuffer.get_end_iter(), True) == ""):
+            self.textbuffer.set_text(self.placeholderStr)
+        return False
+
+    def submit_log(self):
+        pass
+
     def on_button_clicked(self, widget):
         self.destroy()
 
