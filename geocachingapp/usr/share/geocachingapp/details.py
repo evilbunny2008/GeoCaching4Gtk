@@ -264,19 +264,47 @@ class logScreen(Gtk.ApplicationWindow):
         self.show_all()
 
     def onFocusIn(self, event, something):
-        if (self.textbuffer.get_text(self.textbuffer.get_start_iter(),
-            self.textbuffer.get_end_iter(), True) == self.placeholderStr):
+        logtext = self.textbuffer.get_text(self.textbuffer.get_start_iter(),
+                                           self.textbuffer.get_end_iter(), True)
+        if logtext == self.placeholderStr:
             self.textbuffer.set_text("")
         return False
 
     def onFocusOut(self, event, something):
-        if (self.textbuffer.get_text(self.textbuffer.get_start_iter(),
-            self.textbuffer.get_end_iter(), True) == ""):
+        logtext = self.textbuffer.get_text(self.textbuffer.get_start_iter(),
+                                           self.textbuffer.get_end_iter(), True)
+        if logtext == "":
             self.textbuffer.set_text(self.placeholderStr)
         return False
 
-    def submit_log(self):
-        pass
+    def submit_log(self, event):
+        logtext = self.textbuffer.get_text(self.textbuffer.get_start_iter(),
+                                           self.textbuffer.get_end_iter(), True)
+        if logtext == "" or logtext == self.placeholderStr:
+            progress = Notify.Notification.new("ERROR!", "Log text can't be empty")
+            progress.show()
+            return
+
+        logtype = ""
+        logdate = ""
+
+        tree_iter = self.combobox1.get_active_iter()
+        if tree_iter is not None:
+            model = self.combobox1.get_model()
+            logtype = model[tree_iter][:2][0]
+
+        tree_iter = self.combobox2.get_active_iter()
+        if tree_iter is not None:
+            model = self.combobox2.get_model()
+            logdate = model[tree_iter][:2][0]
+
+        if logtype == "" or logdate == "":
+            progress = Notify.Notification.new("ERROR!", "There was a problem with the logdate or logtype")
+            progress.show()
+            return
+
+        print("util.logvisit(" + cacheid + ", " + logtype + ", " + logdate + ", " + logtext + ")")
+        # util.logvisit(cacheid, logtype, logdate, logtext)
 
     def on_button_clicked(self, widget):
         self.destroy()
