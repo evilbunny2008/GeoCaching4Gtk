@@ -9,10 +9,12 @@ import gi
 import files
 import util
 
+gi.require_version('Gdk', '3.0')
 gi.require_version('Gtk', "3.0")
 gi.require_version('Notify', '0.7')
 gi.require_version('WebKit2', '4.0')
 
+from gi.repository import Gdk
 from gi.repository import Gio
 from gi.repository import Gtk
 from gi.repository import Notify
@@ -223,6 +225,14 @@ class logScreen(Gtk.ApplicationWindow):
         hbox = Gtk.HBox()
         vbox.pack_start(hbox, False, True, 0)
         self.add(vbox)
+
+        screen = Gdk.Screen.get_default()
+        gtk_provider = Gtk.CssProvider()
+        gtk_context = Gtk.StyleContext()
+        gtk_context.add_provider_for_screen(screen, gtk_provider,
+                                            Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
+        css = "GtkComboBox { font: 30}"
+        gtk_provider.load_from_data(css)
 
         store = Gtk.ListStore(str)
         store.append(["Found It"])
