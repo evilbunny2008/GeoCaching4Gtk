@@ -190,7 +190,8 @@ class mainScreen(Gtk.ApplicationWindow):
         self.show_details(gcid)
 
     def show_details(self, cacheid):
-        progress = Notify.Notification.new("Please wait...!","Loading cache...")
+        progress = Notify.Notification.new("Please wait...!",
+                                           "Loading " + cacheid + " details...")
         progress.show()
         p = subprocess.run(
             ["/usr/share/geocachingapp/details.py", cacheid, str(app.lat), str(app.lon)],

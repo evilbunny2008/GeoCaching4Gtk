@@ -198,6 +198,7 @@ function update()
 
     def on_button_clicked(self, widget):
         self.destroy()
+        sys.exit(0)
 
 class logScreen(Gtk.ApplicationWindow):
     def __init__(self):
@@ -323,6 +324,9 @@ class logScreen(Gtk.ApplicationWindow):
 
         # print("util.logvisit(" + cacheid + ", " + logtype + ", " + logdate + ", " + logtext + ")")
         util.logvisit(cacheid, logtype, logdate, logtext)
+        util.delete_cache(cacheid)
+        util.dl_cache(cacheid)
+        self.destroy()
 
     def on_button_clicked(self, widget):
         self.destroy()
@@ -333,10 +337,14 @@ if __name__ == "__main__":
         print("This program isn't designed to be stand-alone")
         sys.exit(0)
 
-    cacheid = sys.argv[1]
-    lat = float(sys.argv[2])
-    lon = float(sys.argv[3])
+    try:
+        cacheid = sys.argv[1]
+        lat = float(sys.argv[2])
+        lon = float(sys.argv[3])
 
-    win = cacheScreen()
-    win.show_all()
-    Gtk.main()
+        win = cacheScreen()
+        win.show_all()
+        Gtk.main()
+    except Exception as e:
+        print(str(e))
+        sys.exit(0)
