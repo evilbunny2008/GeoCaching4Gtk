@@ -226,14 +226,6 @@ class logScreen(Gtk.ApplicationWindow):
         vbox.pack_start(hbox, False, True, 0)
         self.add(vbox)
 
-        screen = Gdk.Screen.get_default()
-        gtk_provider = Gtk.CssProvider()
-        gtk_context = Gtk.StyleContext()
-        gtk_context.add_provider_for_screen(screen, gtk_provider,
-                                            Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
-        css = "GtkComboBox { font: 30}"
-        gtk_provider.load_from_data(css)
-
         store = Gtk.ListStore(str)
         store.append(["Found It"])
         store.append(["Didn't Find It"])
@@ -241,6 +233,7 @@ class logScreen(Gtk.ApplicationWindow):
 
         renderer_text = Gtk.CellRendererText()
         self.combobox1 = Gtk.ComboBox.new_with_model(store)
+        self.combobox1.set_name('combobox1')
         self.combobox1.pack_start(renderer_text, True)
         self.combobox1.add_attribute(renderer_text, "text", 0)
         self.combobox1.set_active(0)
@@ -252,12 +245,14 @@ class logScreen(Gtk.ApplicationWindow):
 
         renderer_text = Gtk.CellRendererText()
         self.combobox2 = Gtk.ComboBox.new_with_model(store)
+        self.combobox2.set_name('combobox2')
         self.combobox2.pack_start(renderer_text, True)
         self.combobox2.add_attribute(renderer_text, "text", 0)
         hbox.pack_start(self.combobox2, True, False, 6)
         self.combobox2.set_active(0)
 
         self.textview = Gtk.TextView()
+        self.textview.set_name("textview1")
         self.textview.connect("focus-in-event", self.onFocusIn)
         self.textview.connect("focus-out-event", self.onFocusOut)
 
@@ -268,8 +263,20 @@ class logScreen(Gtk.ApplicationWindow):
         vbox.pack_start(self.textview, True, True, 5)
 
         button = Gtk.Button.new_with_label("Submit Log")
+        button.set_name("button1")
         button.connect("clicked", self.submit_log)
         vbox.pack_start(button, False, True, 0)
+
+        screen = Gdk.Screen.get_default()
+        gtk_provider = Gtk.CssProvider()
+        gtk_context = Gtk.StyleContext()
+        gtk_context.add_provider_for_screen(screen, gtk_provider,
+                                            Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
+        css = "#combobox1 { font-size: 18pt; }\n"
+        css += "#combobox2 { font-size: 18pt; }\n"
+        css += "#textview1 { font-size: 18pt; }\n"
+        css += "#button1 { font-size: 18pt; }\n"
+        gtk_provider.load_from_data(bytes(css.encode()))
 
         self.show_all()
 
@@ -289,7 +296,7 @@ class logScreen(Gtk.ApplicationWindow):
 
     def submit_log(self, event):
         logtext = self.textbuffer.get_text(self.textbuffer.get_start_iter(),
-                                           self.textbuffer.get_end_iter(), True)
+                                           self.textbuffer.get_end_iter(), True).strip()
         if logtext == "" or logtext == self.placeholderStr:
             progress = Notify.Notification.new("ERROR!", "Log text can't be empty")
             progress.show()
@@ -309,12 +316,13 @@ class logScreen(Gtk.ApplicationWindow):
             logdate = model[tree_iter][:2][0]
 
         if logtype == "" or logdate == "":
-            progress = Notify.Notification.new("ERROR!", "There was a problem with the logdate or logtype")
+            progress = Notify.Notification.new("ERROR!",
+                                               "There was a problem with the logdate or logtype")
             progress.show()
             return
 
-        print("util.logvisit(" + cacheid + ", " + logtype + ", " + logdate + ", " + logtext + ")")
-        # util.logvisit(cacheid, logtype, logdate, logtext)
+        # print("util.logvisit(" + cacheid + ", " + logtype + ", " + logdate + ", " + logtext + ")")
+        util.logvisit(cacheid, logtype, logdate, logtext)
 
     def on_button_clicked(self, widget):
         self.destroy()

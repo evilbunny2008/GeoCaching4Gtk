@@ -6,12 +6,11 @@ import os
 import signal
 import subprocess
 import threading
+import gi
 import files
 import util
-import gi
 
 gi.require_version('Champlain', '0.12')
-gi.require_version('Gdk', '3.0')
 gi.require_version('Gtk', "3.0")
 gi.require_version('GtkChamplain', '0.12')
 gi.require_version('GtkClutter', '1.0')
@@ -191,6 +190,8 @@ class mainScreen(Gtk.ApplicationWindow):
         self.show_details(gcid)
 
     def show_details(self, cacheid):
+        progress = Notify.Notification.new("Please wait...!","Loading cache...")
+        progress.show()
         p = subprocess.run(
             ["/usr/share/geocachingapp/details.py", cacheid, str(app.lat), str(app.lon)],
             stderr=subprocess.STDOUT, shell=False, check=True)
