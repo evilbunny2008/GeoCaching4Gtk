@@ -58,7 +58,7 @@ def decdeg2dm(lat, lon):
     londeg = int(lon)
     lonmin = (lon - int(lon)) * 60
 
-    loc = "%c+%2d°+%02.3f'+%c+%03d°+%02.3f'" % \
+    loc = "%c+%d°+%02.3f'+%c+%d°+%02.3f'" % \
           (cardinal_lat, latdeg, latmin, cardinal_lon, londeg, lonmin)
     return loc
 
