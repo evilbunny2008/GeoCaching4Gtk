@@ -324,8 +324,6 @@ class logScreen(Gtk.ApplicationWindow):
 
         # print("util.logvisit(" + cacheid + ", " + logtype + ", " + logdate + ", " + logtext + ")")
         util.logvisit(cacheid, logtype, logdate, logtext)
-        util.delete_cache(cacheid)
-        util.dl_cache(cacheid)
         self.destroy()
 
     def on_button_clicked(self, widget):

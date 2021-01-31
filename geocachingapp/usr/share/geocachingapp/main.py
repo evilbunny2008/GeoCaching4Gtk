@@ -197,6 +197,7 @@ class mainScreen(Gtk.ApplicationWindow):
             ["/usr/share/geocachingapp/details.py", cacheid, str(app.lat), str(app.lon)],
             stderr=subprocess.STDOUT, shell=False, check=True)
         print(p)
+        self.display_markers()
 
     def create_marker_layer(self, view):
         layer = Champlain.MarkerLayer()
