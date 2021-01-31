@@ -245,7 +245,8 @@ class mainScreen(Gtk.ApplicationWindow):
         self.label3.set_markup("<big>" + mystr + "</big>")
 
     def thread_function(self):
-        util.get_cache_list(app.lat, app.lon)
+        row_count = util.get_cache_list(app.lat, app.lon)
+        
         self.layer.remove_all()
         os.kill(os.getpid(), signal.SIGHUP)
 

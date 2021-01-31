@@ -407,6 +407,8 @@ def get_cache_list(lat, lon):
     print(url)
     conn = mysqlite.check_db()
 
+    row_count = 0
+
     try:
         html = SESSION.get(url)
         data = html.text
@@ -421,7 +423,7 @@ def get_cache_list(lat, lon):
 
     if '<tbody id="geocaches">' not in data:
         print("No caches found.")
-        return
+        return row_count
 
     data = data.split('<tbody id="geocaches">', 1)[1].split("</tbody>", 1)[0].strip()
     rows = data.split('<tr  data-rownumber="')
@@ -431,6 +433,7 @@ def get_cache_list(lat, lon):
             if row == "":
                 continue
 
+            row_count += 1
             lat = 0.0
             lon = 0.0
             short = ""
@@ -499,10 +502,12 @@ def get_cache_list(lat, lon):
 
             mysqlite.add_to_db(conn, g_arr, attributes)
         except Exception as error:
-            print("459 - Failed to parse cache info.")
+            print("505 - Failed to parse cache info.")
             print(error)
 
     close_db(conn)
+
+    return row_count
 
 def get_cache_page(conn, cacheid, url):
     """ download and parse cache info... """
