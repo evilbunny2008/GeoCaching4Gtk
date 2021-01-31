@@ -246,7 +246,7 @@ class mainScreen(Gtk.ApplicationWindow):
     def thread_function(self):
         row_count = util.get_cache_list(app.lat, app.lon)
         self.progress.close()
-        n = Notify.Notification.new("There was " + row_count + " Cache(s) Downloaded")
+        n = Notify.Notification.new("There was " + str(row_count) + " Cache(s) Downloaded")
         n.show()
 
         self.layer.remove_all()
