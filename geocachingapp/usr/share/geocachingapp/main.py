@@ -168,7 +168,6 @@ class mainScreen(Gtk.ApplicationWindow):
         print("alarm_handler(" + str(signum) + ")")
         if signum == 1:
             self.display_markers()
-            self.progress.close()
 
     def add_marker(self, lat, lon, gcid, icon):
         iconfile = "/usr/share/geocachingapp/assets/" + icon + ".png"
@@ -246,7 +245,10 @@ class mainScreen(Gtk.ApplicationWindow):
 
     def thread_function(self):
         row_count = util.get_cache_list(app.lat, app.lon)
-        
+        self.progress.close()
+        n = Notify.Notification.new("There was " + row_count + " Cache(s) Downloaded")
+        n.show()
+
         self.layer.remove_all()
         os.kill(os.getpid(), signal.SIGHUP)
 
