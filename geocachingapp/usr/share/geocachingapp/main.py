@@ -159,6 +159,9 @@ class mainScreen(Gtk.ApplicationWindow):
 
         self.display_markers()
 
+        self.label3 = Gtk.Label()
+        self.vbox.add(self.label3)
+
         signal.signal(signal.SIGHUP, self.alarm_handler)
 
     def alarm_handler(self, signum, frame):
@@ -221,6 +224,8 @@ class mainScreen(Gtk.ApplicationWindow):
         app.lat2 = self.view.y_to_latitude(height)
         app.lon2 = self.view.x_to_longitude(width)
 
+        self.update_ll_label()
+
     def map_state_changed(self, view, value):
         app.lat = view.get_property("latitude")
         app.lon = view.get_property("longitude")
@@ -232,6 +237,13 @@ class mainScreen(Gtk.ApplicationWindow):
         app.lat2 = self.view.y_to_latitude(height)
         app.lon2 = self.view.x_to_longitude(width)
 
+        self.update_ll_label()
+
+    def update_ll_label(self):
+        mystr = util.from_decimal(app.lat, 'lat') + " - " + \
+                util.from_decimal(app.lon, 'lon')
+        self.label3.set_markup("<big>" + mystr + "</big>")
+
     def thread_function(self):
         util.get_cache_list(app.lat, app.lon)
         self.layer.remove_all()
@@ -242,8 +254,8 @@ class mainScreen(Gtk.ApplicationWindow):
         thread.start()
 
         self.progress = Notify.Notification.new("Downloading caches...",
-                                           "Downloading caches in specified area " + \
-                                           "this can take a while so sit back...")
+                                                "Downloading caches in specified area " +
+                                                "this can take a while so sit back...")
         self.progress.set_timeout(20000)
         self.progress.set_urgency(2)
         self.progress.show()
