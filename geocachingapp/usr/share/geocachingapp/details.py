@@ -45,13 +45,17 @@ class cacheScreen(Gtk.ApplicationWindow):
 
         menumodel = Gio.Menu()
         menumodel.append("Log Visit", "win.log_visit")
-        # menumodel.append("About", "win.about")
+        menumodel.append("Open in Browser", "win.browser")
         # menumodel.append("Quit", "win.quit")
         button.set_menu_model(menumodel)
 
         log_visit_action = Gio.SimpleAction.new("log_visit", None)
         log_visit_action.connect("activate", self.log_visit_callback)
         self.add_action(log_visit_action)
+
+        browser_action = Gio.SimpleAction.new("browser", None)
+        browser_action.connect("activate", self.browser_callback)
+        self.add_action(browser_action)
 
         button = Gtk.Button(label="<")
         button.connect("clicked", self.on_button_clicked) 
@@ -160,6 +164,11 @@ function update()
     def log_visit_callback(self, action, parameter):
         log = logScreen()
         log.show_all()
+
+    def browser_callback(self, action, parameter):
+        Gtk.show_uri_on_window(None,
+                               "https://www.geocaching.com/geocache/" + cacheid,
+                               Gdk.CURRENT_TIME)
 
     def add_grid_row(self, label1str, label2str, grid1, row):
         label1 = Gtk.Label()
