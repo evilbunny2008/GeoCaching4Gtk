@@ -65,7 +65,7 @@ def save_session(session):
             pickle.dump(session, file)
         print("Session saved.")
     except Exception as error:
-        print("line 59 - Failed to save session, see below for trace.")
+        print("line 68 - Failed to save session, see below for trace.")
         print(error)
 
 def get_auth():

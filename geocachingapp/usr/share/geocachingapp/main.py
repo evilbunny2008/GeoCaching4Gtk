@@ -170,8 +170,8 @@ class mainScreen(Gtk.ApplicationWindow):
             self.display_markers()
 
     def add_marker(self, lat, lon, gcid, icon):
-        iconfile = "/usr/share/geocachingapp/assets/" + icon + ".png"
-        marker = Champlain.Label.new_from_file(iconfile)
+        cachefile = util.geocache_image(gcid, icon)
+        marker = Champlain.Label.new_from_file(cachefile)
         marker.set_draw_background(False)
         marker.set_location(lat, lon)
         self.layer.add_marker(marker)
@@ -196,7 +196,7 @@ class mainScreen(Gtk.ApplicationWindow):
                                            "Loading " + cacheid + " details...")
         progress.show()
         p = subprocess.run(
-            ["/usr/share/geocachingapp/details.py", cacheid, str(app.lat), str(app.lon)],
+            [files.APPBASE + "/details.py", cacheid, str(app.lat), str(app.lon)],
             stderr=subprocess.STDOUT, shell=False, check=True)
         print(p)
         self.display_markers()

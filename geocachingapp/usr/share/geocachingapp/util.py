@@ -8,7 +8,9 @@ import math
 import json
 from html import unescape
 from html.parser import HTMLParser
+import os
 from geographiclib.geodesic import Geodesic
+from PIL import Image, ImageDraw, ImageFont
 import mysqlite
 import files
 import htmlcode
@@ -1013,3 +1015,25 @@ def get_html_logs(cacheid):
 
     html += "</table></body></html>"
     return html
+
+def geocache_image(gcid, icon):
+    iconfile = files.APPBASE + "/assets/" + icon + ".png"
+    cachefile = files.CACHEBASE + "/cache_" + gcid + ".png"
+    if os.path.exists(cachefile):
+        return cachefile
+
+    image = Image.open(iconfile)
+    width, height = image.size
+    new_height = int(height * 1.3)
+    new_width = int(width * 1.3)
+    y = int(new_width / 2 - width / 2)
+
+    result = Image.new(image.mode, (new_width, new_height), (0, 0, 0, 0))
+    result.paste(image, (y, 0))
+
+    img_draw = ImageDraw.Draw(result)
+    my_font = ImageFont.truetype('NotoSansMono-Bold.ttf', 12)
+    img_draw.text((0, height), gcid, font=my_font, fill=(0, 0, 0, 255))
+    result.save(cachefile, 'PNG')
+    print("saving cache icon: " + cachefile)
+    return cachefile
